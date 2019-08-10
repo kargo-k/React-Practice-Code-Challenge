@@ -42,22 +42,26 @@ class App extends Component {
         }
       })
       let newIndex = this.state.sushiIndex +1
-      this.setState({sushiIndex: newIndex})
-      this.setState({sushiAll:sushis})
+      this.setState({
+        sushiAll:sushis,
+      sushiIndex: newIndex  
+      })
   }
  
 //inspired by phillip 
   handleEatSushi = (sushi) => {
     if(this.state.cash < sushi.price){
       this.handleWarning()
-    }else {
+    } else {
     let index = this.state.sushiAll.indexOf(sushi)
     let arr = this.state.sushiAll
     sushi.eaten = true; 
     arr[index] = sushi
-    this.setState({sushiAll: arr})
     let newCash = this.state.cash - sushi.price
-    this.setState({cash: newCash})
+    this.setState({
+      cash: newCash,
+      sushiAll: arr
+    })
     }
   }
   handleWarning = () =>{

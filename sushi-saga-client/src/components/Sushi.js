@@ -1,19 +1,19 @@
 import React, { Fragment } from 'react'
 
-const Sushi = (props) => {
+const Sushi = ({handleEatSushi,sushi}) => {
   return (
     <div className="sushi">
       <div className="plate" 
-           onClick={() => props.handleEatSushi(props.sushi)}>
+           onClick={() => handleEatSushi(sushi)}>
         { 
-          props.sushi.eaten == true?
+          sushi.eaten == true?
             null
           :
-            <img src={props.sushi.img_url} width="100%" />
+            <img src={sushi.img_url} width="100%" />
         }
       </div>
       <h4 className="sushi-details">
-        {props.sushi.name} - ${props.sushi.price}
+        {sushi.name} - ${sushi.price}
       </h4>
     </div>
   )
