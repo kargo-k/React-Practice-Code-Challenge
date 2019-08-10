@@ -3,6 +3,7 @@ import React, { Fragment } from 'react'
 const Table = (props) => {
 
   const renderPlates = (array) => {
+    console.log(props.sushi)
     return array.map((x, index) => {
       return <div className="empty-plate" style={{ top: -7 * index }}/>
     })
