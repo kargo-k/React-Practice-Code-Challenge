@@ -77,3 +77,7 @@ body {
   width: 700px;
   margin: auto;
 }
+
+.warning{
+  color:red;
+}

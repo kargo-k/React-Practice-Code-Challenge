@@ -10,7 +10,9 @@ class App extends Component {
     super()
     this.state= {
       sushiAll:[],
-      sushiIndex:1
+      sushiIndex:1,
+      cash:50,
+      warning: null
     }
   }
   //fetch sushi
@@ -19,46 +21,47 @@ class App extends Component {
   }
 
  handleFetch = () => {
-
   fetch(API)
   .then(response => response.json())
   .then(data => {
- 
-    this.setSushi(data)
-  
+   return this.setSushi(data)
   })
 }
 
 
-  //fixes limit 4
+  // limit 4
   setSushi = (data) => {
     let sushis =[]
     let counter = 0
-
-    for (let item in data) {
-      if(data[item].id === this.state.sushiIndex && counter!== 4){
-        sushis.push(data[item]) 
-        let newIndex = this.state.sushiIndex +1
-        this.setState({sushiIndex: newIndex})
-        counter++
-      }
-     
-    }
-    let newIndex = this.state.sushiIndex +1
-    this.setState({sushiIndex: newIndex})
-    this.setState({sushiAll:sushis})
-    console.log(this.state.sushiAll)
-    console.log(this.state.sushiIndex)
+      data.map(item => {
+        if(item.id === this.state.sushiIndex && counter!== 4){
+          sushis.push(item) 
+          let newIndex = this.state.sushiIndex +1
+          this.setState({sushiIndex: newIndex})
+          counter++
+        }
+      })
+      let newIndex = this.state.sushiIndex +1
+      this.setState({sushiIndex: newIndex})
+      this.setState({sushiAll:sushis})
   }
  
 //inspired by phillip 
   handleEatSushi = (sushi) => {
+    if(this.state.cash < sushi.price){
+      this.handleWarning()
+    }else {
     let index = this.state.sushiAll.indexOf(sushi)
     let arr = this.state.sushiAll
-    sushi.eaten = true;
+    sushi.eaten = true; 
     arr[index] = sushi
-    this.setState(arr)
-    return sushi
+    this.setState({sushiAll: arr})
+    let newCash = this.state.cash - sushi.price
+    this.setState({cash: newCash})
+    }
+  }
+  handleWarning = () =>{
+    this.setState({warning: 'Sorry you cant afford this sushi!'})
   }
   
 
@@ -66,7 +69,7 @@ class App extends Component {
     return (
       <div className="app">
         <SushiContainer sushiAll={this.state.sushiAll} handleEatSushi={this.handleEatSushi} handleMore={this.handleFetch} />
-        <Table sushi={this.state.sushiAll}  />
+        <Table cash={this.state.cash} warning={this.state.warning} sushiAll={this.state.sushiAll}  />
       </div>
     );
   }
