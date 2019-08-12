@@ -16,7 +16,7 @@ const Table = (props) => {
       <div className="table">
         <div className="stack">
           {
-            renderPlates([props.allSushi.filter(sushi => sushi.eaten == true)])
+            renderPlates(props.sushis)
           }
         </div>
       </div>

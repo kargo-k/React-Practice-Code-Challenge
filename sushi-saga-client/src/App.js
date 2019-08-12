@@ -10,59 +10,57 @@ class App extends Component {
     super()
     this.state = {
       allSushi: [],
-      sushiIndex: 1,
+      sushiIndex: 0,
       cash: 50,
       warning: null
     }
   }
 
   componentDidMount() {
-    this.handleFetch()
-  }
-
-  handleFetch = () => {
-    fetch(API)
+    return fetch(API)
       .then(resp => resp.json())
-      .then(data => { return this.setSushi(data) })
+      .then(data => {
+        data.map(sushi => sushi['eaten'] = false)
+        this.setState({ allSushi: data })
+      })
   }
 
   //only geting 4 sushi
-  setSushi = data => {
-    let sushis = []
-    let counter = 0
-    data.map(item => {
-      if (item.id === this.state.sushiIndex && counter !== 4) {
-        sushis.push(item)
-        let newIndex = this.state.sushiIndex + 1
-        this.setState({ sushiIndex: newIndex })
-        counter++
-      }
-    })
-    let newIndex = this.state.sushiIndex + 1
-    this.setState({
-      allSushi: sushis,
-      sushiIndex: newIndex
-    })
+  getSushi = () => {
+    let sushiArray = this.state.allSushi.slice(this.state.sushiIndex, this.state.sushiIndex + 4)
+    return sushiArray
   }
 
-  handleEatSushi = sushi => {
-    if (this.state.cash < sushi.price) {
+  handleMoreButton = () => {
+    this.setState({ sushiIndex: this.state.sushiIndex + 4 })
+  }
+
+  handleEatSushi = onSushi => {
+    let cash = this.state.cash
+    if (this.state.cash < onSushi.price) {
       this.handleWarning()
     } else {
-      let index = this.state.allSushi.indexOf(sushi)
-      let arr = this.state.allSushi
-      sushi.eaten = true
-      arr[index] = sushi
-      let newCash = this.state.cash - sushi.price
-      this.setState({
-        cash: newCash,
-        allSushi: arr
+      let sushiArray = this.state.allSushi.map(sushi => {
+        if (sushi.id === onSushi.id) {
+          sushi.eaten = true
+          cash -= sushi.price
+          return sushi
+        }
+        else {
+          return sushi
+        }
       })
+      this.setState({ allSushi: sushiArray, cash: cash })
     }
+  }
+
+  getEatenSushi = () => {
+    return this.state.allSushi.filter(sushi => sushi.eaten)
   }
 
   handleWarning = () => {
     this.setState({ warning: 'Sorry, you can\'t afford this sushi!' })
+    console.log('warning!')
   }
 
   render() {
@@ -70,15 +68,15 @@ class App extends Component {
       <div className="app">
 
         <SushiContainer
-          allSushi={this.state.allSushi}
+          allSushi={this.getSushi()}
           handleEatSushi={this.handleEatSushi}
-          handleMore={this.handleFetch}
+          handleMore={this.handleMoreButton}
         />
 
         <Table
           cash={this.state.cash}
           warning={this.state.warning}
-          allSushi={this.state.allSushi}
+          sushis={this.getEatenSushi()}
         />
 
       </div>
